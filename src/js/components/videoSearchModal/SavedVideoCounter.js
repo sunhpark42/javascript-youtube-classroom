@@ -24,7 +24,7 @@ export default class VideoSearchResult extends Component {
 
   render(preStates, states) {
     if (preStates.savedVideoCount !== states.savedVideoCount) {
-      this.$savedVideoCount.textContent = states.savedVideoCount;
+      this.$savedVideoCountNumber.textContent = states.savedVideoCount;
     }
   }
 }

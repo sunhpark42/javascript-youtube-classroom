@@ -41,13 +41,14 @@ export default class VideoManagerView extends VideoGrid {
   }
 
   renderSavedVideo() {
-    const savedVideos = this.getSavedVideos();
+    const savedVideos = Object.fromEntries(
+      Object.entries(this.getSavedVideos()).filter(
+        ([_, value]) => value.watched === this.watchedFilter
+      )
+    );
+
     if (Object.keys(savedVideos).length) {
       Object.keys(savedVideos).forEach((videoId) => {
-        if (savedVideos[videoId].watched !== this.watchedFilter) {
-          return;
-        }
-
         const video = new Video({
           videoId,
           videoTitle: savedVideos[videoId].videoTitle,
@@ -76,6 +77,7 @@ export default class VideoManagerView extends VideoGrid {
   useWatchedFilter(watchedFilter = false) {
     if (this.watchedFilter !== watchedFilter) {
       this.watchedFilter = watchedFilter;
+      this.$notSavedVideoMessage.classList.add('d-none');
       this.clearVideos();
       this.renderSavedVideo();
     }
@@ -83,6 +85,7 @@ export default class VideoManagerView extends VideoGrid {
 
   render(preStates, states) {
     if (preStates.savedVideoCount !== states.savedVideoCount) {
+      this.$notSavedVideoMessage.classList.add('d-none');
       this.clearVideos();
       this.renderSavedVideo();
     }
@@ -96,6 +99,9 @@ export default class VideoManagerView extends VideoGrid {
     ].watched;
     localStorageSetItem(LOCALSTORAGE_KEYS.VIDEOS, savedVideos);
     clip.remove();
+    this.$notSavedVideoMessage.classList.add('d-none');
+    this.clearVideos();
+    this.renderSavedVideo();
   }
 
   onClickDeleteButton(event) {
@@ -111,6 +117,9 @@ export default class VideoManagerView extends VideoGrid {
     delete savedVideos[clip.dataset.videoId];
     localStorageSetItem(LOCALSTORAGE_KEYS.VIDEOS, savedVideos);
     clip.remove();
+    this.$notSavedVideoMessage.classList.add('d-none');
+    this.clearVideos();
+    this.renderSavedVideo();
   }
 
   showSnackBar(text) {
