@@ -1,6 +1,6 @@
 import VideoSearchBar from './VideoSearchBar.js';
 import SearchTermHistory from './SearchTermHistory.js';
-import VideoSearchResult from './VideoSearchResult.js';
+import SavedVideoCounter from './SavedVideoCounter.js';
 import Component from '../../core/Component.js';
 import { $ } from '../../utils/utils.js';
 import { youtubeAPIManager } from '../App.js';
@@ -10,6 +10,7 @@ import {
   updateRequestPending,
   updateVideosToBeShown,
 } from '../../redux/action.js';
+import SearchVideoGrid from './SearchVIdeoGrid.js';
 
 export default class VideoSearchModal extends Component {
   constructor($target) {
@@ -19,7 +20,7 @@ export default class VideoSearchModal extends Component {
 
   initRender() {
     this.$target.innerHTML = `
-    <div class="video-search-overlay w-100" data-action="modal-close"></div>
+    <div class="video-search-overlay w-100"></div>
     <div class="modal-inner p-8">
         <button class="modal-close">
           <svg viewbox="0 0 40 40">
@@ -33,7 +34,9 @@ export default class VideoSearchModal extends Component {
         </section>
         <section id="search-term-history" class="mt-2">
         </section>
-        <section id="video-search-result">
+        <section id="saved-video-counter">
+        </section>
+        <section id="searched-video-wrapper" class="video-wrapper">
         </section>
       </div>
     </div>`;
@@ -48,13 +51,16 @@ export default class VideoSearchModal extends Component {
       requestVideos: this.requestVideos.bind(this),
     });
 
-    this.videoSearchResult = new VideoSearchResult($('#video-search-result'), {
+    this.savedVideoCounter = new SavedVideoCounter($('#saved-video-counter'));
+
+    this.searchVideoGrid = new SearchVideoGrid($('#searched-video-wrapper'), {
       requestVideos: this.requestVideos.bind(this),
     });
   }
 
   selectDOM() {
     this.$modalClose = $('.modal-close');
+    this.$overlay = $('.video-search-overlay');
   }
 
   bindEvent() {
@@ -66,7 +72,7 @@ export default class VideoSearchModal extends Component {
   }
 
   onClickOutsideModal(event) {
-    if (event.target.dataset.action === 'modal-close') {
+    if (event.target === this.$overlay) {
       this.onModalClose();
     }
   }
@@ -74,28 +80,28 @@ export default class VideoSearchModal extends Component {
   onModalShow() {
     this.$target.classList.add('open');
     this.videoSearchBar.$videoSearchInput.focus();
+    document.body.style.overflowY = 'hidden';
   }
 
   onModalClose() {
     this.$target.classList.remove('open');
+    document.body.style.overflowY = 'visible';
   }
 
-  requestVideos(searchTerm) {
-    if (searchTerm) {
-      store.dispatch(addSearchHistory(searchTerm));
-      youtubeAPIManager.setSearchTerm(searchTerm);
+  async requestVideos(searchTerm) {
+    try {
+      if (searchTerm) {
+        store.dispatch(addSearchHistory(searchTerm));
+        youtubeAPIManager.setSearchTerm(searchTerm);
+      }
+      store.dispatch(updateRequestPending(true));
+      const videoInfos = await youtubeAPIManager.requestVideos();
+      store.dispatch(updateRequestPending(false));
+      store.dispatch(updateVideosToBeShown(videoInfos));
+    } catch (error) {
+      this.searchVideoGrid.removeSkeletons();
+      store.dispatch(updateRequestPending(false));
+      alert(error);
     }
-    store.dispatch(updateRequestPending(true));
-    youtubeAPIManager
-      .requestVideos()
-      .then((videoInfos) => {
-        store.dispatch(updateRequestPending(false));
-        store.dispatch(updateVideosToBeShown(videoInfos));
-      })
-      .catch((error) => {
-        this.videoSearchResult.removeSkeletons();
-        store.dispatch(updateRequestPending(false));
-        alert(error);
-      });
   }
 }

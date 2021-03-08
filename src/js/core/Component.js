@@ -8,9 +8,19 @@ export default class Component {
     this.bindEvent();
   }
 
-  setup() {}
-  initRender() {}
-  render() {}
-  selectDOM() {}
-  bindEvent() {}
+  setup() {
+    console.warn('재정의 되지 않은 setup 입니다.');
+  }
+  initRender() {
+    console.warn('재정의 되지 않은 initRender 입니다.');
+  }
+  render() {
+    console.warn('재정의 되지 않은 render 입니다.');
+  }
+  selectDOM() {
+    console.warn('재정의 되지 않은 selectDOM 입니다.');
+  }
+  bindEvent() {
+    console.warn('재정의 되지 않은 bindEvent 입니다.');
+  }
 }

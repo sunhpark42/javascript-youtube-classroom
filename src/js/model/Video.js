@@ -135,15 +135,6 @@ export default class Video {
     const fragment = document.createDocumentFragment();
     const clip = createElement({ tag: 'article', classes: ['clip'] });
 
-    if (pageType !== 'management') {
-      clip.classList.add('d-none');
-    }
-
-    // 초기 생성 : 볼 영상 기준
-    if (pageType === 'management' && this.watched) {
-      clip.classList.add('d-none');
-    }
-
     clip.dataset.videoId = this.videoId;
 
     const previewContainer = createElement({

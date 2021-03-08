@@ -1,8 +1,9 @@
 import YoutubeAPIManager from '../model/YoutubeAPIManager.js';
 import VideoSearchModal from './videoSearchModal/VideoSearchModal.js';
-import VideoList from './videoList/VideoList.js';
+
 import { $, localStorageSetItem, localStorageGetItem } from '../utils/utils.js';
 import { LOCALSTORAGE_KEYS } from '../constants/constants.js';
+import VideoManagerView from './videoManageView/VideoManageView.js';
 
 export const youtubeAPIManager = new YoutubeAPIManager();
 export default class App {
@@ -55,7 +56,7 @@ export default class App {
         </nav>
       </header>
       <main class="mt-10">
-        <section class="video-wrapper">
+        <section id="main-video-wrapper" class="video-wrapper">
         </section>
       </main>
     </div>
@@ -65,7 +66,9 @@ export default class App {
   }
 
   mount() {
-    this.videoList = new VideoList($('.video-wrapper'));
+    this.videoManagerView = new VideoManagerView($('#main-video-wrapper'), {
+      requestVideos: () => {},
+    });
     this.viewSearchModal = new VideoSearchModal($('.modal'));
   }
 
@@ -81,11 +84,11 @@ export default class App {
     );
 
     this.$watchLaterButton.addEventListener('click', () => {
-      this.videoList.setFilter('watchLater');
+      this.videoManagerView.useWatchedFilter(false);
     });
 
     this.$watchedButton.addEventListener('click', () => {
-      this.videoList.setFilter('watched');
+      this.videoManagerView.useWatchedFilter(true);
     });
   }
 }
