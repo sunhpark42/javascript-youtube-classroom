@@ -17,7 +17,7 @@ export default class YoutubeAPIManager {
   }
 
   createRequestURL() {
-    const requestURL = `${YOUTUBE_REQUEST_URL}`;
+    const requestURL = `${YOUTUBE_REQUEST_URL}/search?`;
     // const requestURL = `https://www.googleapis.com/youtube/v3/search?`;
     const searchParams = new URLSearchParams({
       part: 'snippet',
