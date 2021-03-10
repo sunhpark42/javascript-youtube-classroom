@@ -1,3 +1,6 @@
+export const YOUTUBE_REQUEST_URL =
+  'https://sunhpark42-youtube-classroom.netlify.app/youtube';
+
 export const VALUES = {
   MAXIMUM_VIDEO_SAVE_COUNT: 100,
   MAXIMUM_SEARCH_HISTORY_COUNT: 3,
