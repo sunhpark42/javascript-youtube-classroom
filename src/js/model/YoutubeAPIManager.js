@@ -1,4 +1,4 @@
-import { MY_KEY } from '../key.js';
+// import { MY_KEY } from '../key.js';
 import {
   VALUES,
   ERROR_MESSAGES,
@@ -23,7 +23,7 @@ export default class YoutubeAPIManager {
       part: 'snippet',
       type: 'video',
       q: this.searchTerm,
-      key: MY_KEY,
+      // key: MY_KEY
       maxResults: VALUES.MAXIMUM_SEARCH_VIDEO_COUNT,
     });
 
